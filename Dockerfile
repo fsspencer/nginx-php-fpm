@@ -21,6 +21,7 @@ ENV LUAJIT_INC=/usr/include/luajit-2.0
 # resolves #166
 ENV LD_PRELOAD /usr/lib/preloadable_libiconv.so php
 RUN apk add --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing gnu-libiconv
+RUN apk add --no-cache shadow
 
 RUN GPG_KEYS=B0F4253373F8F6F510D42178520A9993A1C052F8 \
   && CONFIG="\
@@ -276,8 +277,7 @@ ADD errors/ /var/www/errors
 
 RUN chmod 777 -Rf /var/www /var/www/.* \
   && chown -Rf nginx:nginx /var/www /var/www/.* \
-  && apk --no-cache add shadow && usermod -u 1000 nginx \
-  && chsh -s /bin/bash nginx
+  && usermod -u 1000 nginx
 
 VOLUME /var/www/html
 WORKDIR /var/www/html
