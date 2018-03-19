@@ -276,6 +276,7 @@ ADD errors/ /var/www/errors
 
 RUN chmod 777 -Rf /var/www /var/www/.* \
   && chown -Rf nginx:nginx /var/www /var/www/.* \
+  && apk --no-cache add shadow && usermod -u 1000 nginx \
   && chsh -s /bin/bash nginx
 
 VOLUME /var/www/html
