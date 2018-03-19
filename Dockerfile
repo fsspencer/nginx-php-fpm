@@ -6,6 +6,12 @@ ENV php_conf /usr/local/etc/php-fpm.conf
 ENV fpm_conf /usr/local/etc/php-fpm.d/www.conf
 ENV php_vars /usr/local/etc/php/conf.d/docker-vars.ini
 
+ENV PHP_MEM_LIMIT 2G
+ENV PHP_POST_MAX_SIZE 100M
+ENV PHP_UPLOAD_MAX_FILESIZE 100M
+ENV PHP_MAX_EXECUTION_TIME 1800
+ENV PHP_ZLIB_OUTPUT_COMPRESSION On
+
 ENV NGINX_VERSION 1.13.7
 ENV LUA_MODULE_VERSION 0.10.11
 ENV DEVEL_KIT_MODULE_VERSION 0.3.0
@@ -231,10 +237,12 @@ RUN ln -s /etc/nginx/sites-available/default.conf /etc/nginx/sites-enabled/defau
 
 # tweak php-fpm config
 RUN echo "cgi.fix_pathinfo=0" > ${php_vars} &&\
-    echo "upload_max_filesize = 100M"  >> ${php_vars} &&\
-    echo "post_max_size = 100M"  >> ${php_vars} &&\
+    echo "upload_max_filesize = ${PHP_UPLOAD_MAX_FILESIZE}"  >> ${php_vars} &&\
+    echo "post_max_size = ${PHP_POST_MAX_SIZE}"  >> ${php_vars} &&\
     echo "variables_order = \"EGPCS\""  >> ${php_vars} && \
-    echo "memory_limit = 128M"  >> ${php_vars} && \
+    echo "memory_limit = ${PHP_MEM_LIMIT}"  >> ${php_vars} && \
+    echo "max_execution_time = ${PHP_MAX_EXECUTION_TIME}"  >> ${php_vars} && \
+    echo "zlib.output_compression = ${PHP_ZLIB_OUTPUT_COMPRESSION}"  >> ${php_vars} && \
     sed -i \
         -e "s/;catch_workers_output\s*=\s*yes/catch_workers_output = yes/g" \
         -e "s/pm.max_children = 5/pm.max_children = 4/g" \
@@ -268,5 +276,8 @@ ADD errors/ /var/www/errors
 
 
 EXPOSE 443 80
+
+VOLUME /var/www/html
+WORKDIR /var/www/html
 
 CMD ["/start.sh"]
