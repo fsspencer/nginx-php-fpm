@@ -174,6 +174,7 @@ RUN echo @testing http://nl.alpinelinux.org/alpine/edge/testing >> /etc/apk/repo
     wget \
     supervisor \
     curl \
+    nano \
     libcurl \
     git \
     python \
@@ -275,6 +276,18 @@ RUN chmod 755 /usr/bin/pull && chmod 755 /usr/bin/push && chmod 755 /usr/bin/let
 # copy in code
 ADD src/ /var/www/html/
 ADD errors/ /var/www/errors
+
+# Install Magento 2
+
+RUN rm -rf /var/www/html \
+  && composer create-project magento/community-edition /var/www/html
+
+# Install Magerun 2
+
+RUN wget https://files.magerun.net/n98-magerun2.phar \
+  && chmod +x ./n98-magerun2.phar \
+  && mv ./n98-magerun2.phar /usr/local/bin/
+
 
 RUN chmod 777 -Rf /var/www /var/www/.* \
   && chown -Rf nginx:nginx /var/www /var/www/.* \
